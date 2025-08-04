@@ -1,0 +1,93 @@
+@inject AppState AppState
+@inject IJSRuntime JS
+
+<div class="flex justify-between items-center">
+    <span>FEEDS</span>
+
+    <div class="flex gap-2">
+        <wa-icon id="button_refresh" name="refresh" class="cursor-pointer" role="button" tabindex="0"
+            @onclick="@OnFeedsChange"></wa-icon>
+        <wa-tooltip for="button_refresh">刷新</wa-tooltip>
+
+        <wa-icon id="button_mark-all-as-read" name="mark_email_read" class="cursor-pointer" role="button" tabindex="0"
+            @onclick="@MarkAllAsReadAsync"></wa-icon>
+        <wa-tooltip for="button_mark-all-as-read">标记为已读</wa-tooltip>
+
+        <wa-icon id="button_add-feed" name="add" class="cursor-pointer" role="button" tabindex="0"
+            data-dialog="open @AddFeedDialogId"></wa-icon>
+        <wa-tooltip for="button_add-feed">添加订阅</wa-tooltip>
+
+        <wa-icon id="button_opml-export" name="save" class="cursor-pointer" role="button" tabindex="0"
+            @onclick="ExportOpmlAsync"></wa-icon>
+        <wa-tooltip for="button_opml-export">导出 OPML 备份</wa-tooltip>
+
+        <label>
+            <wa-icon id="button_opml-import" name="assignment_returned" class="cursor-pointer" role="button"
+                tabindex="0"></wa-icon>
+            <InputFile type="file" style="display: none;" OnChange="e => ImportOpmlAsync(e.File)" />
+        </label>
+        <wa-tooltip for="button_opml-import">导入 OPML</wa-tooltip>
+    </div>
+</div>
+
+<wa-dialog label="添加订阅" id="@AddFeedDialogId">
+    <div>
+        <a href="https://microsoftedge.microsoft.com/addons/detail/rsshub-radar/gangkeiaobmjcjokiofpkfpcobpbmnln">RSSHub
+            Radar</a> 插件可以提取网站的RSS订阅
+    </div>
+
+    <form @ref="FormRef" @onsubmit="AddFeedAsync">
+        <wa-input placeholder="https://example.com/feed.xml" required="true"
+            @onchange="e => { FeedUrl = (string)e.Value!; }"></wa-input>
+    </form>
+
+    <wa-button slot="footer" variant="brand" @onclick="@RequestSubmit">Ok</wa-button>
+
+    <wa-button hidden data-dialog="close" @ref="CloseButtonRef">Cancel</wa-button>
+</wa-dialog>
+
+@code {
+    [Parameter]
+    public EventCallback OnFeedsChange { get; set; }
+
+    Guid AddFeedDialogId { get; } = Guid.NewGuid();
+
+    string FeedUrl { get; set; } = "";
+    ElementReference FormRef { get; set; }
+    ElementReference CloseButtonRef { get; set; }
+
+    async Task RequestSubmit()
+    {
+        await JS.InvokeVoidAsync("__call", FormRef, "requestSubmit");
+    }
+
+    async Task MarkAllAsReadAsync()
+    {
+        await AppState.MarkAllAsReadAsync();
+        await OnFeedsChange.InvokeAsync();
+    }
+
+    async Task AddFeedAsync()
+    {
+        await AppState.AddFeedAsync(FeedUrl);
+        await JS.InvokeVoidAsync("__call", CloseButtonRef, "click");
+        await OnFeedsChange.InvokeAsync();
+    }
+
+    async Task ExportOpmlAsync()
+    {
+        var opml = AppState.ExportOpml();
+        await JS.InvokeVoidAsync("__download", "subscriptions.opml", opml);
+    }
+
+    async Task ImportOpmlAsync(IBrowserFile file)
+    {
+        if (file is not null)
+        {
+            var stream = file.OpenReadStream();
+            await AppState.ImportOpmlAsync(stream);
+            await OnFeedsChange.InvokeAsync();
+            stream.Dispose();
+        }
+    }
+}

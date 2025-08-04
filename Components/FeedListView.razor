@@ -1,0 +1,37 @@
+@inject IJSRuntime JS
+@inject AppState AppState
+@implements IDisposable
+
+<div slot="start" class="h-screen overflow-hidden p-2 flex flex-col">
+    <FeedListViewToolBar OnFeedsChange="@ReloadFeedsAndEpisodes" />
+
+    <div class="overflow-y-auto">
+        <div>
+            @foreach (var (feed, unreadCount) in AppState.Feeds)
+            {
+                <FeedListViewItem UnreadCount="@unreadCount" Feed="@feed" OnFeedsChange="@ReloadFeedsAndEpisodes"
+                    OnFeedSelected="@(() => AppState.SelectFeedAsync(feed))" />
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    async Task ReloadFeedsAndEpisodes()
+    {
+        await AppState.LoadFeedsAsync();
+        await AppState.LoadEpisodesAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await AppState.LoadFeedsAsync();
+        AppState.OnFeedsChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        AppState.OnFeedsChange -= StateHasChanged;
+    }
+}

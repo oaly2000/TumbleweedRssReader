@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <base href="/" />
+    <link href="css/output.css" rel="stylesheet" />
+    <link href="Tumbleweed.styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/lib/webawesome/styles/webawesome.css" />
+    <script type="module" src="/lib/webawesome/webawesome.loader.js"></script>
+    <script type="module">
+        import { registerIconLibrary } from "/lib/webawesome/webawesome.loader.js";
+        registerIconLibrary("default", {
+            resolver: (name, _family, variant = "outline") => {
+                return `https://cdn.jsdelivr.net/npm/@material-icons/svg@1.0.5/svg/${name}/${variant}.svg`;
+            },
+            mutator: (svg) => svg.setAttribute("fill", "currentColor")
+        });
+    </script>
+    <script src="script.js"></script>
+</head>
+<body>
+    <app>Loading...</app>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.webview.js"></script>
+</body>
+</html>

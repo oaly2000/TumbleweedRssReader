@@ -1,0 +1,43 @@
+@inject AppState AppState
+
+<div class="flex items-center gap-2 cursor-pointer overflow-hidden pl-1 py-2 not-last:border-b border-b-gray-400"
+    @onclick="@OnFeedSelected">
+    <div class="w-8 h-8 grid place-items-center shrink-0">
+        @if (UnreadCount > 0)
+        {
+            <wa-tooltip for="feed_@Feed.GetHashCode()">标记为已读</wa-tooltip>
+            <wa-badge id="feed_@Feed.GetHashCode()" variant="brand" attention="pulse" pill
+                class="w-6 h-6 shrink-0 cursor-pointer" @onclick="@MarkAsReadAsync"
+                @onclick:stopPropagation>@UnreadCount</wa-badge>
+        }
+        else
+        {
+            <img src="@(Feed.IconUrl ?? "image/default-icon.svg")" alt="@Feed.Title" class="w-8 h-8">
+        }
+    </div>
+
+    <div>
+        <a href="@Feed.Link" target="_blank" class="hover:underline">@Feed.Title</a>
+        <div class="text-xs text-gray-500 overflow-ellipsis whitespace-nowrap">@Feed.Description</div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    required public int UnreadCount { get; set; }
+
+    [Parameter]
+    required public Feed Feed { get; set; }
+
+    [Parameter]
+    required public EventCallback OnFeedsChange { get; set; }
+
+    [Parameter]
+    required public EventCallback OnFeedSelected { get; set; }
+
+    async Task MarkAsReadAsync()
+    {
+        await AppState.MarkAllAsReadAsync();
+        await OnFeedsChange.InvokeAsync();
+    }
+}

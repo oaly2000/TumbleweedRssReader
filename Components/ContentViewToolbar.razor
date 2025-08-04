@@ -1,0 +1,70 @@
+@inject AppState AppState
+@inject IJSRuntime JS
+@implements IDisposable
+
+<div class="bg-white rounded-full shadow-lg flex gap-1 px-5">
+
+    @if (IsStared)
+    {
+        <wa-tooltip for="button_unstar">取消收藏</wa-tooltip>
+        <wa-button id="button_unstar" disabled="@IsDisabled" appearance="plain" @onclick="@AppState.UnstarCurrentEpisodeAsync">
+            <wa-icon name="star" label="取消收藏"></wa-icon>
+        </wa-button>
+    }
+    else
+    {
+        <wa-tooltip for="button_star">收藏</wa-tooltip>
+        <wa-button id="button_star" disabled="@IsDisabled" appearance="plain" @onclick="@AppState.StarCurrentEpisodeAsync">
+            <wa-icon name="star_outline" label="收藏"></wa-icon>
+        </wa-button>
+    }
+
+    @if (IsRead)
+    {
+        <wa-tooltip for="button_mark-as-unread">标记为未读</wa-tooltip>
+        <wa-button id="button_mark-as-unread" disabled="@IsDisabled" appearance="plain" @onclick="@AppState.MarkCurrentEpisodeAsUnreadAsync">
+            <wa-icon name="mark_email_read" label="标记为未读"></wa-icon>
+        </wa-button>
+    }
+    else
+    {
+        <wa-tooltip for="button_mark-as-read">标记为已读</wa-tooltip>
+        <wa-button id="button_mark-as-read" disabled="@IsDisabled" appearance="plain" @onclick="@AppState.MarkCurrentEpisodeAsReadAsync">
+            <wa-icon name="mark_email_unread" label="标记为已读"></wa-icon>
+        </wa-button>
+    }
+
+    <wa-tooltip for="button_show-as-webpage">网页/摘要</wa-tooltip>
+    <wa-button id="button_show-as-webpage" disabled="@IsDisabled" appearance="plain"
+        @onclick="@AppState.ToggleUseIFrameAsync">
+        <wa-icon name="public" label="网页/摘要"></wa-icon>
+    </wa-button>
+
+    <wa-tooltip for="button_copy-link">复制链接</wa-tooltip>
+    <wa-button id="button_copy-link" disabled="@IsDisabled" appearance="plain" @onclick="@CopyLinkToClipBoard">
+        <wa-icon name="share" label="复制链接"></wa-icon>
+    </wa-button>
+</div>
+
+@code {
+    string? Link => AppState.SelectedEpisode?.Link;
+    bool IsDisabled => Link is null;
+    bool IsRead => AppState.SelectedEpisode?.IsRead ?? false;
+    bool IsStared => AppState.SelectedEpisode?.IsStarred ?? false;
+
+    async Task CopyLinkToClipBoard()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", Link);
+        await JS.InvokeVoidAsync("alert", "链接已复制");
+    }
+
+    protected override void OnInitialized()
+    {
+        AppState.OnSelectedEpisodeChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        AppState.OnSelectedEpisodeChange -= StateHasChanged;
+    }
+}

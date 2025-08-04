@@ -1,0 +1,48 @@
+@using System.Diagnostics
+@inject IJSRuntime JS
+@inject AppState AppState
+
+@implements IDisposable
+
+<div slot="end" class="h-screen overflow-hidden flex flex-col p-2 gap-2 bg-gray-300">
+	<ContentViewToolbar />
+
+	<div class="grow flex overflow-y-auto">
+		<div class="grow">
+			@if (AppState.SelectedEpisode is not null)
+			{
+				@if (AppState.UseIFrame)
+				{
+					<wa-zoomable-frame src="@AppState.SelectedEpisode.Link" zoom="1" zoom-levels="0.5 0.75 1 1.25 1.5 1.75 2"
+						class="h-full" style="aspect-ratio: auto;" onload="console.log">
+						<wa-icon slot="zoom-out-icon" name="remove"></wa-icon>
+						<wa-icon slot="zoom-in-icon" name="add"></wa-icon>
+					</wa-zoomable-frame>
+				}
+				else
+				{
+					<div class="bg-white rounded p-5">
+						@((MarkupString)AppState.SelectedEpisode.Content)
+					</div>
+				}
+			}
+
+		</div>
+	</div>
+</div>
+
+@code {
+	override protected async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		await AppState.LoadEpisodesAsync();
+		AppState.OnSelectedEpisodeChange += StateHasChanged;
+		AppState.OnUseIFrameChange += StateHasChanged;
+	}
+
+	public void Dispose()
+	{
+		AppState.OnSelectedEpisodeChange -= StateHasChanged;
+		AppState.OnUseIFrameChange -= StateHasChanged;
+	}
+}

@@ -1,0 +1,44 @@
+@using System.Diagnostics
+@implements IDisposable
+@inject AppState AppState
+
+<div slot="end" class="h-screen overflow-hidden p-2 flex flex-col">
+	<div class="flex justify-between items-center">
+		<span>EPISODES</span>
+
+		<div class="flex gap-2">
+			<wa-icon id="button_delete-feed" name="delete_outline" @onclick="RemoveFeed" class="cursor-pointer"></wa-icon>
+			<wa-tooltip for="button_delete-feed">删除订阅</wa-tooltip>
+		</div>
+	</div>
+
+	<div class="grow overflow-y-auto">
+		<div>
+			@foreach (var item in AppState.Episodes)
+			{
+				<div class="cursor-pointer hover:underline @(item.IsRead ? "opacity-50" : "")"
+					@onclick="() => AppState.SelectEpisodeAsync(item)">@item.Title</div>
+			}
+		</div>
+	</div>
+</div>
+
+@code {
+	string? FeedId { get; set; }
+
+	async Task RemoveFeed()
+	{
+		if (AppState.SelectedFeed is null) return;
+		await AppState.RemoveFeedAsync(AppState.SelectedFeed.Id);
+	}
+
+	protected override void OnInitialized()
+	{
+		AppState.OnSelectedFeedChange += StateHasChanged;
+	}
+
+	public void Dispose()
+	{
+		AppState.OnSelectedFeedChange -= StateHasChanged;
+	}
+}
