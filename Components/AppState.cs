@@ -11,6 +11,14 @@ public class AppState(AppDbContext context, IHttpClientFactory factory)
 {
     public event Action? OnChange;
 
+    private bool _isLoading;
+    public event Action? OnIsLoadingChange;
+    public bool IsLoading
+    {
+        get => _isLoading;
+        private set { _isLoading = value; OnIsLoadingChange?.Invoke(); OnChange?.Invoke(); }
+    }
+
     private IEnumerable<(Feed Feed, int UnreadCount)> _feeds = [];
     public event Action? OnFeedsChange;
     public IEnumerable<(Feed Feed, int UnreadCount)> Feeds
@@ -58,6 +66,23 @@ public class AppState(AppDbContext context, IHttpClientFactory factory)
             UseIFrame = !UseIFrame;
             SelectedFeed.UseIFrame = UseIFrame;
             await context.Feeds.Where(x => x.Id == SelectedFeed.Id).ExecuteUpdateAsync(c => c.SetProperty(x => x.UseIFrame, UseIFrame));
+        }
+    }
+
+    public async Task UseLoadingAsync(Func<Task> func)
+    {
+        IsLoading = true;
+        try
+        {
+            await func();
+        }
+        catch
+        {
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 

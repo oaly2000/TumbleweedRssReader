@@ -1,3 +1,6 @@
+@inject AppState AppState
+@implements IDisposable
+
 <wa-split-panel position-in-pixels="600">
     <wa-split-panel slot="start" position-in-pixels="300">
         <FeedListView />
@@ -5,3 +8,19 @@
     </wa-split-panel>
     <ContentView />
 </wa-split-panel>
+
+<div class="h-screen place-items-center bg-gray-400/25 fixed top-0 left-0 right-0 bottom-0" style="display: @(AppState.IsLoading? "grid" : "none");">
+    <wa-spinner style="font-size: 2rem;"></wa-spinner>
+</div>
+
+@code {
+    override protected void OnInitialized()
+    {
+        AppState.OnIsLoadingChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        AppState.OnIsLoadingChange -= StateHasChanged;
+    }
+}

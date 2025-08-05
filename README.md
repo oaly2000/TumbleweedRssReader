@@ -4,9 +4,7 @@
 
 TODO:
   - [x] Favicon 显示
-  - [ ] Blazor加载前及网络请求时显示 Spinner
+  - [x] Blazor加载前及网络请求时显示 Spinner
+  - [ ] 网络请求失败时错误信息提示，统一提示框
   - [ ] Dark Mode
   - [ ] 收藏夹视图
-  - [ ] i18n
-  - [ ] 项目主页
-  - [ ] 网页版
