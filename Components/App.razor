@@ -9,7 +9,7 @@
     <ContentView />
 </wa-split-panel>
 
-<div class="h-screen place-items-center bg-gray-400/25 fixed top-0 left-0 right-0 bottom-0" style="display: @(AppState.IsLoading? "grid" : "none");">
+<div class="h-screen place-items-center bg-[var(--wa-color-overlay-modal)] fixed top-0 left-0 right-0 bottom-0" style="display: @(AppState.IsLoading? "grid" : "none");">
     <wa-spinner style="font-size: 2rem;"></wa-spinner>
 </div>
 

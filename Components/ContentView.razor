@@ -4,7 +4,7 @@
 
 @implements IDisposable
 
-<div slot="end" class="h-screen overflow-hidden flex flex-col p-2 gap-2 bg-gray-300">
+<div slot="end" class="h-screen overflow-hidden flex flex-col p-2 gap-2 bg-[var(--wa-color-surface-lowered)]">
 	<ContentViewToolbar />
 
 	<div class="grow flex overflow-y-auto">
@@ -21,7 +21,7 @@
 				}
 				else
 				{
-					<div class="bg-white rounded p-5">
+					<div class="bg-[var(--wa-color-surface-default)] rounded p-5">
 						@((MarkupString)AppState.SelectedEpisode.Content)
 					</div>
 				}

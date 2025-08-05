@@ -5,25 +5,28 @@
     <span>FEEDS</span>
 
     <div class="flex gap-2">
-        <wa-icon id="button_refresh" name="refresh" class="cursor-pointer" role="button" tabindex="0"
-            @onclick="@OnFeedsChange"></wa-icon>
+        <div class="cursor-pointer" role="button" tabindex="0" @onclick="@OnFeedsChange">
+            <wa-icon id="button_refresh" name="refresh"></wa-icon>
+        </div>
         <wa-tooltip for="button_refresh">刷新</wa-tooltip>
 
-        <wa-icon id="button_mark-all-as-read" name="mark_email_read" class="cursor-pointer" role="button" tabindex="0"
-            @onclick="@MarkAllAsReadAsync"></wa-icon>
+        <div class="cursor-pointer" role="button" tabindex="0" @onclick="MarkAllAsReadAsync">
+            <wa-icon id="button_mark-all-as-read" name="mark_email_read"></wa-icon>
+        </div>
         <wa-tooltip for="button_mark-all-as-read">标记为已读</wa-tooltip>
 
-        <wa-icon id="button_add-feed" name="add" class="cursor-pointer" role="button" tabindex="0"
-            data-dialog="open @AddFeedDialogId"></wa-icon>
+        <div class="cursor-pointer" role="button" tabindex="0" data-dialog="open @AddFeedDialogId">
+            <wa-icon id="button_add-feed" name="add"></wa-icon>
+        </div>
         <wa-tooltip for="button_add-feed">添加订阅</wa-tooltip>
 
-        <wa-icon id="button_opml-export" name="save" class="cursor-pointer" role="button" tabindex="0"
-            @onclick="ExportOpmlAsync"></wa-icon>
+        <div class="cursor-pointer" role="button" tabindex="0" @onclick="ExportOpmlAsync">
+            <wa-icon id="button_opml-export" name="save"></wa-icon>
+        </div>
         <wa-tooltip for="button_opml-export">导出 OPML 备份</wa-tooltip>
 
-        <label>
-            <wa-icon id="button_opml-import" name="assignment_returned" class="cursor-pointer" role="button"
-                tabindex="0"></wa-icon>
+        <label class="cursor-pointer" role="button" tabindex="0" style="line-height: unset;">
+            <wa-icon id="button_opml-import" name="assignment_returned"></wa-icon>
             <InputFile type="file" style="display: none;" OnChange="e => ImportOpmlAsync(e.File)" />
         </label>
         <wa-tooltip for="button_opml-import">导入 OPML</wa-tooltip>

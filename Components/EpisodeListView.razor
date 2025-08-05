@@ -6,8 +6,8 @@
 	<div class="flex justify-between items-center">
 		<span>EPISODES</span>
 
-		<div class="flex gap-2">
-			<wa-icon id="button_delete-feed" name="delete_outline" @onclick="RemoveFeed" class="cursor-pointer"></wa-icon>
+		<div class="flex gap-2 cursor-pointer" role="button" tabindex="0" @onclick="RemoveFeed">
+			<wa-icon id="button_delete-feed" name="delete_outline"></wa-icon>
 			<wa-tooltip for="button_delete-feed">删除订阅</wa-tooltip>
 		</div>
 	</div>
