@@ -180,8 +180,6 @@ public class AppState(AppDbContext context, IHttpClientFactory factory)
         SelectedEpisode = episode;
         if (SelectedFeed is not null) UseIFrame = SelectedFeed.UseIFrame;
 
-        Debug.WriteLine($"SelectedEpisode: {SelectedEpisode?.Title}");
-
         if (episode is not null) await MarkCurrentEpisodeAsReadAsync();
     }
 
@@ -192,6 +190,7 @@ public class AppState(AppDbContext context, IHttpClientFactory factory)
             SelectedEpisode.IsRead = true;
             await context.Episodes.Where(x => x.Id == SelectedEpisode.Id).ExecuteUpdateAsync(c => c.SetProperty(x => x.IsRead, true));
             SelectedEpisode.IsRead = true;
+            OnFeedsChange?.Invoke();
             OnSelectedEpisodeChange?.Invoke();
         }
     }
@@ -203,6 +202,7 @@ public class AppState(AppDbContext context, IHttpClientFactory factory)
             SelectedEpisode.IsRead = false;
             await context.Episodes.Where(x => x.Id == SelectedEpisode.Id).ExecuteUpdateAsync(c => c.SetProperty(x => x.IsRead, false));
             SelectedEpisode.IsRead = false;
+            OnFeedsChange?.Invoke();
             OnSelectedEpisodeChange?.Invoke();
         }
     }

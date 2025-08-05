@@ -7,7 +7,7 @@
         {
             <wa-tooltip for="feed_@Feed.GetHashCode()">标记为已读</wa-tooltip>
             <wa-badge id="feed_@Feed.GetHashCode()" variant="brand" attention="pulse" pill
-                class="w-6 h-6 shrink-0 cursor-pointer" @onclick="@MarkAsReadAsync"
+                class="w-6 h-6 shrink-0 cursor-pointer" @onclick="() => AppState.MarkAllAsReadAsync(Feed)"
                 @onclick:stopPropagation>@UnreadCount</wa-badge>
         }
         else
@@ -34,10 +34,4 @@
 
     [Parameter]
     required public EventCallback OnFeedSelected { get; set; }
-
-    async Task MarkAsReadAsync()
-    {
-        await AppState.MarkAllAsReadAsync();
-        await OnFeedsChange.InvokeAsync();
-    }
 }

@@ -55,7 +55,7 @@
     async Task CopyLinkToClipBoard()
     {
         await JS.InvokeVoidAsync("navigator.clipboard.writeText", Link);
-        await JS.InvokeVoidAsync("alert", "链接已复制");
+        await JS.InvokeVoidAsync("toast", "链接已复制到剪贴板");
     }
 
     protected override void OnInitialized()

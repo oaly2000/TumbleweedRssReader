@@ -1,3 +1,4 @@
+@using Tumbleweed.Components.Events;
 @inject AppState AppState
 @inject IJSRuntime JS
 
@@ -33,7 +34,7 @@
     </div>
 </div>
 
-<wa-dialog label="添加订阅" id="@AddFeedDialogId">
+<wa-dialog label="添加订阅" id="@AddFeedDialogId" @onWaHide="@(() => FeedUrl = "")">
     <div>
         <a href="https://microsoftedge.microsoft.com/addons/detail/rsshub-radar/gangkeiaobmjcjokiofpkfpcobpbmnln">RSSHub
             Radar</a> 插件可以提取网站的RSS订阅
@@ -73,8 +74,15 @@
     async Task AddFeedAsync()
     {
         await JS.InvokeVoidAsync("__call", CloseButtonRef, "click");
-        await AppState.UseLoadingAsync(() => AppState.AddFeedAsync(FeedUrl));
-        await OnFeedsChange.InvokeAsync();
+        try
+        {
+            await AppState.UseLoadingAsync(() => AppState.AddFeedAsync(FeedUrl));
+            await OnFeedsChange.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("toast", ex.Message, "error");
+        }
     }
 
     async Task ExportOpmlAsync()
@@ -88,8 +96,15 @@
         if (file is not null)
         {
             var stream = file.OpenReadStream();
-            await AppState.UseLoadingAsync(() => AppState.ImportOpmlAsync(stream));
-            await OnFeedsChange.InvokeAsync();
+            try
+            {
+                await AppState.UseLoadingAsync(() => AppState.ImportOpmlAsync(stream));
+                await OnFeedsChange.InvokeAsync();
+            }
+            catch (Exception ex)
+            {
+                await JS.InvokeVoidAsync("toast", $"[{ex.GetType().Name}] {ex.Message}", "error", false);
+            }
             stream.Dispose();
         }
     }

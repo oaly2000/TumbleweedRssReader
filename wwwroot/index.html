@@ -8,6 +8,7 @@
     <link href="Tumbleweed.styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="/lib/webawesome/styles/webawesome.css" />
     <script type="module" src="/lib/webawesome/webawesome.loader.js"></script>
+    <script src="/lib/toaster-ui.js"></script>
     <script type="module">
         import { registerIconLibrary } from "/lib/webawesome/webawesome.loader.js";
         registerIconLibrary("default", {
@@ -33,5 +34,13 @@
     </div>
 
     <script src="_framework/blazor.webview.js"></script>
+    <script>
+        const toaster = new ToasterUi();
+        function toast(message, type = "default", autoClose = true) {
+            toaster.addToast(message, type, { autoClose });
+        }
+
+        registerWebAwesomeEvents();
+    </script>
 </body>
 </html>

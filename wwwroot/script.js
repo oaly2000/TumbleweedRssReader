@@ -5,6 +5,11 @@
 function __call(obj, method, ...args) {
     return obj[method](...args);
 }
+
+function __set(obj, prop, value) {
+    obj[prop] = value;
+}
+
 function __download(filename, content) {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([content]));
@@ -22,3 +27,14 @@ function __download(filename, content) {
     const DARK = '(prefers-color-scheme: dark)'
     if (window.matchMedia(DARK).matches) document.documentElement.classList.add('wa-dark');
 })()
+
+/* -------------------------------------------------------------------------- */
+/*                              wa custom events                              */
+/* -------------------------------------------------------------------------- */
+
+function registerWebAwesomeEvents() {
+    Blazor.registerCustomEventType('WaHide', {
+        browserEventName: 'wa-hide',
+        createEventArgs: (e) => ({ })
+    });
+}
