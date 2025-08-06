@@ -154,6 +154,7 @@ public class AppState(AppDbContext context, IHttpClientFactory factory)
             await context.Episodes.Where(x => x.FeedId == feedId && !x.IsStarred).ExecuteDeleteAsync();
             await tx.CommitAsync();
             await LoadFeedsAsync();
+            Episodes = [];
         }
         catch (Exception)
         {
@@ -170,8 +171,8 @@ public class AppState(AppDbContext context, IHttpClientFactory factory)
 
     public async Task LoadEpisodesAsync()
     {
-        if (SelectedFeed is not null)
-            Episodes = await context.Episodes.Where(x => x.FeedId == SelectedFeed.Id).ToListAsync();
+        if (SelectedFeed is null) return;
+        Episodes = await context.Episodes.Where(x => x.FeedId == SelectedFeed.Id).ToListAsync();
         SelectedEpisode = Episodes.Where(x => x.Id == SelectedEpisode?.Id).SingleOrDefault();
     }
 
@@ -190,8 +191,8 @@ public class AppState(AppDbContext context, IHttpClientFactory factory)
             SelectedEpisode.IsRead = true;
             await context.Episodes.Where(x => x.Id == SelectedEpisode.Id).ExecuteUpdateAsync(c => c.SetProperty(x => x.IsRead, true));
             SelectedEpisode.IsRead = true;
-            OnFeedsChange?.Invoke();
-            OnSelectedEpisodeChange?.Invoke();
+            await LoadFeedsAsync();
+            OnEpisodesChange?.Invoke();
         }
     }
 
@@ -202,8 +203,8 @@ public class AppState(AppDbContext context, IHttpClientFactory factory)
             SelectedEpisode.IsRead = false;
             await context.Episodes.Where(x => x.Id == SelectedEpisode.Id).ExecuteUpdateAsync(c => c.SetProperty(x => x.IsRead, false));
             SelectedEpisode.IsRead = false;
-            OnFeedsChange?.Invoke();
-            OnSelectedEpisodeChange?.Invoke();
+            await LoadFeedsAsync();
+            OnEpisodesChange?.Invoke();
         }
     }
 
@@ -214,7 +215,8 @@ public class AppState(AppDbContext context, IHttpClientFactory factory)
         await episodes.ExecuteUpdateAsync(c => c.SetProperty(x => x.IsRead, true));
 
         await LoadFeedsAsync();
-        await LoadEpisodesAsync();
+        foreach (var item in Episodes) item.IsRead = true;
+        OnEpisodesChange?.Invoke();
     }
 
     public async Task StarCurrentEpisodeAsync()

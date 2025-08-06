@@ -24,8 +24,6 @@
 </div>
 
 @code {
-	string? FeedId { get; set; }
-
 	async Task RemoveFeed()
 	{
 		if (AppState.SelectedFeed is null) return;
@@ -34,11 +32,11 @@
 
 	protected override void OnInitialized()
 	{
-		AppState.OnSelectedFeedChange += StateHasChanged;
+		AppState.OnEpisodesChange += StateHasChanged;
 	}
 
 	public void Dispose()
 	{
-		AppState.OnSelectedFeedChange -= StateHasChanged;
+		AppState.OnEpisodesChange -= StateHasChanged;
 	}
 }
